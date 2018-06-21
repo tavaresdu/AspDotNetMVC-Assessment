@@ -1,0 +1,56 @@
+﻿<div class="row">
+    <div class="col-sm-6 my-3">
+        <form action="@Url.Action("Index")" method="post">
+            <div class="input-group ">
+                <input type="text" class="form-control col-md-6" name="search" placeholder="Digite nome e/ou sobrenome" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+        
+        <div class="float-right col-md-6 my-3">
+            <a class="btn btn-info float-right" href="@Url.Action("Cadastrar")" type="button">Cadastrar nova pessoa</a>
+        </div>
+</div>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Data de Nascimento</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.people.Count > 0)
+                {
+                    foreach (var person in ViewBag.people)
+                    {
+                <tr class="text-center">
+                    <td style="white-space: nowrap; width: 1%;">
+                        <div class="btn-group">
+                            <a class="btn btn-info" href="@Url.Action("Visualizar", "Home", new { id = person.Id })" type="button">Visualizar</a>
+                            <a class="btn btn-warning text-white" href="@Url.Action("Editar", "Home", new { id = person.Id })" type="button">Editar</a>
+                            <a class="btn btn-danger" href="@Url.Action("Remover", "Home", new { id = person.Id })" type="button">Remover</a>
+                        </div>
+                    </td>
+                    <td>@person.Name</td>
+                    <td>@person.Surname</td>
+                    <td>@person.Birthdate.ToString("dd/MM/yyyy")</td>
+                </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="text-center">
+                        <td colspan="4">Não há registros</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
