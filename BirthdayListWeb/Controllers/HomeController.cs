@@ -20,14 +20,16 @@ namespace BirthdayListWeb.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            ViewBag.people = personDAO.GetAll();
+            ViewBag.birthdayToday = personDAO.FindBirthdayToday();
+            ViewBag.people = personDAO.GetAll().OrderBy(o => o.DaysToBirthday()).ToList();
             return View();
         }
 
         [HttpPost]
         public ActionResult Index(String search)
         {
-            ViewBag.people = personDAO.FindByNameAndSurname(search);
+            ViewBag.birthdayToday = personDAO.FindBirthdayToday();
+            ViewBag.people = personDAO.FindByNameAndSurname(search).OrderBy(o => o.DaysToBirthday()).ToList();
             ViewBag.search = search;
             return View();
         }

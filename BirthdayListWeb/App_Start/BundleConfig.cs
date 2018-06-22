@@ -8,6 +8,9 @@ namespace BirthdayListWeb
         // Para obter mais informações sobre o agrupamento, visite https://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.Add(new ScriptBundle("~/bundles/jquery-ui").Include(
+                        "~/Scripts/jquery-ui.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -26,6 +29,9 @@ namespace BirthdayListWeb
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       new CssRewriteUrlTransform()));
+
+            bundles.Add(new StyleBundle("~/Content/jquery-ui").Include(
+                      "~/Content/jquery-ui.css"));
         }
     }
 }

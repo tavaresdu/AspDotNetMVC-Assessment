@@ -18,7 +18,18 @@ namespace BirthdayListWeb.Models
 
         [Required]
         [DisplayName("Data de Nascimento")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Birthdate { get; set; }
+
+        public int DaysToBirthday()
+        {
+            DateTime now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime nextBirthday = new DateTime(now.Year, Birthdate.Month, Birthdate.Day);
+            if (now.CompareTo(nextBirthday) > 0)
+            {
+                nextBirthday = new DateTime(now.Year + 1, Birthdate.Month, Birthdate.Day);
+            }
+            return Convert.ToInt32((nextBirthday - now).TotalDays);
+        }
     }
 }

@@ -78,6 +78,28 @@ namespace BirthdayListWeb.DAO
             return people;
         }
 
+        public List<Person> FindBirthdayToday()
+        {
+            dbConnection.Open();
+            IDbCommand dbCommand = dbConnection.CreateCommand();
+            dbCommand.CommandText = "SELECT * FROM Person WHERE MONTH(Birthdate) = MONTH(GETDATE()) AND DAY(Birthdate) = DAY(GETDATE())";
+            IDataReader dataReader = dbCommand.ExecuteReader();
+
+            List<Person> people = new List<Person>();
+            while (dataReader.Read())
+            {
+                people.Add(new Person
+                {
+                    Id = Convert.ToInt32(dataReader["Id"]),
+                    Name = Convert.ToString(dataReader["Name"]),
+                    Surname = Convert.ToString(dataReader["Surname"]),
+                    Birthdate = Convert.ToDateTime(dataReader["Birthdate"])
+                });
+            }
+            dbConnection.Close();
+            return people;
+        }
+
         public List<Person> GetAll()
         {
             dbConnection.Open();

@@ -1,18 +1,34 @@
-﻿<div class="row">
+﻿<div class="row justify-content-md-center">
+    <ul class="list-group my-3">
+        <li class="list-group-item active">Aniversariantes do dia (@DateTime.Now.ToString("dd/MM")):</li>
+        @if (ViewBag.birthdayToday != null && ViewBag.birthdayToday.Count > 0)
+        {
+            foreach (var person in ViewBag.birthdayToday)
+            {
+                <li class="list-group-item">🎉 @(person.Name + ' ' + person.Surname) 🎉</li>
+            }
+        }
+        else
+        {
+                <li class="list-group-item">Ninguém faz aniversário hoje ☹️</li>
+        }
+    </ul>
+</div>
+<div class="row">
     <div class="col-sm-6 my-3">
         <form action="@Url.Action("Index")" method="post">
             <div class="input-group ">
-                <input type="text" class="form-control col-md-6" name="search" placeholder="Digite nome e/ou sobrenome" />
+                <input type="text" class="form-control col-md-6" value="@ViewBag.search" name="search" placeholder="Digite nome e/ou sobrenome" />
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit">Buscar</button>
                 </div>
             </div>
         </form>
     </div>
-        
-        <div class="float-right col-md-6 my-3">
-            <a class="btn btn-info float-right" href="@Url.Action("Cadastrar")" type="button">Cadastrar nova pessoa</a>
-        </div>
+
+    <div class="float-right col-md-6 my-3">
+        <a class="btn btn-info float-right" href="@Url.Action("Cadastrar")" type="button">Cadastrar nova pessoa</a>
+    </div>
 </div>
 <div class="row">
     <div class="table-responsive">
@@ -30,18 +46,18 @@
                 {
                     foreach (var person in ViewBag.people)
                     {
-                <tr class="text-center">
-                    <td style="white-space: nowrap; width: 1%;">
-                        <div class="btn-group">
-                            <a class="btn btn-info" href="@Url.Action("Visualizar", "Home", new { id = person.Id })" type="button">Visualizar</a>
-                            <a class="btn btn-warning text-white" href="@Url.Action("Editar", "Home", new { id = person.Id })" type="button">Editar</a>
-                            <a class="btn btn-danger" href="@Url.Action("Remover", "Home", new { id = person.Id })" type="button">Remover</a>
-                        </div>
-                    </td>
-                    <td>@person.Name</td>
-                    <td>@person.Surname</td>
-                    <td>@person.Birthdate.ToString("dd/MM/yyyy")</td>
-                </tr>
+                        <tr class="text-center">
+                            <td style="white-space: nowrap; width: 1%;">
+                                <div class="btn-group">
+                                    <a class="btn btn-info" href="@Url.Action("Visualizar", "Home", new { id = person.Id })" type="button">Visualizar</a>
+                                    <a class="btn btn-warning text-white" href="@Url.Action("Editar", "Home", new { id = person.Id })" type="button">Editar</a>
+                                    <a class="btn btn-danger" href="@Url.Action("Remover", "Home", new { id = person.Id })" type="button">Remover</a>
+                                </div>
+                            </td>
+                            <td>@person.Name</td>
+                            <td>@person.Surname</td>
+                            <td>@person.Birthdate.ToString("dd/MM/yyyy")</td>
+                        </tr>
                     }
                 }
                 else
