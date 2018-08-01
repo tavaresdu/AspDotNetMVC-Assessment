@@ -21,7 +21,7 @@ namespace BirthdayListWeb.Controllers
         public ActionResult Index()
         {
             ViewBag.birthdayToday = personDAO.FindBirthdayToday();
-            ViewBag.people = personDAO.GetAll().OrderBy(o => o.DaysToBirthday()).ToList();
+            ViewBag.people = personDAO.List().OrderBy(o => o.DaysToBirthday()).ToList();
             return View();
         }
 

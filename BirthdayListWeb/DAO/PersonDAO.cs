@@ -1,148 +1,76 @@
 ﻿using BirthdayListWeb.Models;
+using BirthdayManagerWeb.DAO;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Entity;
 using System.Linq;
 
 namespace BirthdayListWeb.DAO
 {
     public class PersonDAO
     {
-        private IDbConnection dbConnection; 
-
-        public PersonDAO()
-        {
-            dbConnection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Database=BirthdayListDB;Trusted_Connection=True;MultipleActiveResultSets=true");
-        }
-
         public void Add(Person person)
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "INSERT INTO Person(Name, Surname, Birthdate) VALUES (@Name, @Surname, @Birthdate)";
-            dbCommand.Parameters.Add(new SqlParameter("Name", person.Name.Trim()));
-            dbCommand.Parameters.Add(new SqlParameter("Surname", person.Surname.Trim()));
-            dbCommand.Parameters.Add(new SqlParameter("Birthdate", person.Birthdate));
-            dbCommand.ExecuteNonQuery();
+            using (var context = new BirthdayListContext())
+            {
+                context.People.Add(person);
+                context.SaveChanges();
+            }
+        }
+
+        public List<Person> List()
+        {
+            using (var context = new BirthdayListContext())
+            {
+                return context.People.ToList();
+            }
         }
 
         public Person FindById(int id)
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "SELECT * FROM Person WHERE Id = @Id";
-            dbCommand.Parameters.Add(new SqlParameter("Id", id));
-            IDataReader dataReader = dbCommand.ExecuteReader();
-
-            Person person;
-            if (dataReader.Read())
+            using (var context = new BirthdayListContext())
             {
-                person = new Person
-                {
-                    Id = Convert.ToInt32(dataReader["Id"]),
-                    Name = Convert.ToString(dataReader["Name"]),
-                    Surname = Convert.ToString(dataReader["Surname"]),
-                    Birthdate = Convert.ToDateTime(dataReader["Birthdate"])
-                };
+                return context.People.Where(p => p.Id == id).FirstOrDefault();
             }
-            else
-            {
-                person = null;
-            }
-
-            dbConnection.Close();
-            return person;
         }
 
         public List<Person> FindByNameAndSurname(string search)
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "SELECT * FROM Person WHERE CONCAT(Name, ' ', Surname) LIKE @search";
-            dbCommand.Parameters.Add(new SqlParameter("search", "%"+search+"%"));
-            IDataReader dataReader = dbCommand.ExecuteReader();
-
-            List<Person> people = new List<Person>();
-            while (dataReader.Read())
+            using (var context = new BirthdayListContext())
             {
-                people.Add(new Person
-                {
-                    Id = Convert.ToInt32(dataReader["Id"]),
-                    Name = Convert.ToString(dataReader["Name"]),
-                    Surname = Convert.ToString(dataReader["Surname"]),
-                    Birthdate = Convert.ToDateTime(dataReader["Birthdate"])
-                });
+                return context.People.Where(p => (p.Name + p.Surname).Contains(search)).ToList();
             }
-            dbConnection.Close();
-            return people;
         }
 
         public List<Person> FindBirthdayToday()
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "SELECT * FROM Person WHERE MONTH(Birthdate) = MONTH(GETDATE()) AND DAY(Birthdate) = DAY(GETDATE())";
-            IDataReader dataReader = dbCommand.ExecuteReader();
-
-            List<Person> people = new List<Person>();
-            while (dataReader.Read())
+            using (var context = new BirthdayListContext())
             {
-                people.Add(new Person
-                {
-                    Id = Convert.ToInt32(dataReader["Id"]),
-                    Name = Convert.ToString(dataReader["Name"]),
-                    Surname = Convert.ToString(dataReader["Surname"]),
-                    Birthdate = Convert.ToDateTime(dataReader["Birthdate"])
-                });
+                DateTime now = DateTime.Now;
+                return context.People.Where(
+                    p => p.Birthdate.Day == now.Day && p.Birthdate.Month == now.Month
+                ).ToList();
             }
-            dbConnection.Close();
-            return people;
-        }
-
-        public List<Person> GetAll()
-        {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "SELECT * FROM Person";
-            IDataReader dataReader = dbCommand.ExecuteReader();
-
-            List<Person> people = new List<Person>();
-            while (dataReader.Read())
-            {
-                people.Add(new Person
-                {
-                    Id = Convert.ToInt32(dataReader["Id"]),
-                    Name = Convert.ToString(dataReader["Name"]),
-                    Surname = Convert.ToString(dataReader["Surname"]),
-                    Birthdate = Convert.ToDateTime(dataReader["Birthdate"])
-                });
-            }
-            dbConnection.Close();
-            return people;
         }
 
         public void Update(Person person)
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "UPDATE Person SET Name = @Name, Surname = @Surname, Birthdate = @Birthdate WHERE Id = @Id";
-            dbCommand.Parameters.Add(new SqlParameter("Id", person.Id));
-            dbCommand.Parameters.Add(new SqlParameter("Name", person.Name.Trim()));
-            dbCommand.Parameters.Add(new SqlParameter("Surname", person.Surname.Trim()));
-            dbCommand.Parameters.Add(new SqlParameter("Birthdate", person.Birthdate));
-            dbCommand.ExecuteNonQuery();
-            dbConnection.Close();
+            using (var context = new BirthdayListContext())
+            {
+                context.Entry(person).State = EntityState.Modified;
+                context.SaveChanges();
+            }
         }
 
         public void Remove(int id)
         {
-            dbConnection.Open();
-            IDbCommand dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "DELETE FROM Person WHERE Id = @Id";
-            dbCommand.Parameters.Add(new SqlParameter("Id",id));
-            dbCommand.ExecuteNonQuery();
-            dbConnection.Close();
+            using (var context = new BirthdayListContext())
+            {
+                var person = new Person { Id = id };
+                context.Entry(person).State = EntityState.Deleted;
+                context.SaveChanges();
+            }
         }
     }
 }
